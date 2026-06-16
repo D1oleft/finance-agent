@@ -132,6 +132,7 @@ finance-agent/
     ├── subscriptions.json      # 订阅模板
     ├── goals.json              # 目标模板
     ├── debts.json              # 负债模板
+    ├── reminders.json          # 提醒模板
     └── transactions.jsonl      # 交易记录模板
 ```
 

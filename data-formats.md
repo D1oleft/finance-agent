@@ -22,7 +22,7 @@
 - `time`: ISO 8601 格式时间
 - `amount`: 金额（正数）
 - `type`: `expense`（支出）或 `income`（收入）
-- `category`: 分类（餐饮/交通/娱乐/购物/居住/订阅/医疗/学习/转账）
+- `category`: 分类（餐饮/交通/娱乐/购物/居住/订阅/医疗/学习/转账/其他）
 - `description`: 描述
 - `account`: 账户名称（可选）
 - `tags`: 标签数组（可选）
@@ -40,7 +40,7 @@
 }
 ```
 
-类型：`e-wallet`（电子钱包）、`bank`（银行卡）、`cash`（现金）、`investment`（投资）
+类型：`e-wallet`（电子钱包）、`bank`（银行卡）、`cash`（现金）、`investment`（投资）、`credit`（信用账户，如花呗、信用卡、借呗）
 
 ## 定期收支 (recurring.json)
 
@@ -78,6 +78,7 @@
     "医疗": 0,
     "学习": 200,
     "订阅": 200,
+    "转账": 0,
     "其他": 0
   }
 }
@@ -89,6 +90,7 @@
 {
   "subscriptions": [
     {
+      "id": "sub_001",
       "name": "B站大会员",
       "amount": 25,
       "cycle": "monthly",
@@ -100,7 +102,14 @@
 }
 ```
 
-周期：`monthly`（月）、`yearly`（年）
+字段说明：
+- `id`: 唯一标识，格式 `sub_{序号}`
+- `name`: 订阅名称
+- `amount`: 金额
+- `cycle`: 周期，`monthly`（月）、`yearly`（年）
+- `next_date`: 下次扣费日期
+- `category`: 分类
+- `account`: 扣费账户
 
 ## 存钱目标 (goals.json)
 
@@ -118,6 +127,31 @@
 }
 ```
 
+## 提醒 (reminders.json)
+
+```json
+{
+  "reminders": [
+    {
+      "id": "rem_001",
+      "name": "花呗还款",
+      "date": "每月9号",
+      "account": "支付宝",
+      "enabled": true,
+      "created_at": "2026-06-01T00:00:00+08:00"
+    }
+  ]
+}
+```
+
+字段说明：
+- `id`: 唯一标识，格式 `rem_{序号}`
+- `name`: 提醒名称
+- `date`: 提醒日期（支持"每月X号"、"YYYY-MM-DD"等格式）
+- `account`: 关联账户（可选）
+- `enabled`: 是否启用
+- `created_at`: 创建时间
+
 ## 负债 (debts.json)
 
 ```json
@@ -126,6 +160,7 @@
     {
       "name": "花呗",
       "type": "huabei",
+      "status": "active",
       "initial_amount": 5000,
       "current_amount": 3200,
       "repayment_day": "每月9号",
@@ -144,11 +179,14 @@
 
 类型：`credit-card`（信用卡）、`huabei`（花呗）、`jiebei`（借呗）、`loan`（贷款）、`other`（其他）
 
+状态：`active`（进行中）、`settled`（已结清）
+
 字段说明：
 - `name`: 负债名称
 - `type`: 负债类型
-- `initial_amount`: 初始欠款金额
-- `current_amount`: 当前剩余欠款
+- `status`: 负债状态（添加时默认为 `active`，还清后改为 `settled`）
+- `initial_amount`: 初始欠款金额（添加时指定的金额）
+- `current_amount`: 当前剩余欠款（添加时等于 initial_amount）
 - `repayment_day`: 还款日描述
 - `repayment_history`: 还款记录数组
 - `created_at`: 创建时间

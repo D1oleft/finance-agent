@@ -35,6 +35,8 @@ allowed-tools: Read Write
 → 已添加负债：信用卡，欠款 8,500元，还款日：每月25号
 ```
 
+> **参数语义**：添加负债时指定的金额同时作为 `initial_amount`（初始欠款）和 `current_amount`（当前欠款），即添加时两者相等。
+
 **记录还款**：
 ```
 /debt 还款 花呗 1000
@@ -43,6 +45,11 @@ allowed-tools: Read Write
 /debt 还款 信用卡 5000
 → 信用卡已还款 5,000元，剩余欠款 3,500元
 ```
+
+> **重要**：还款操作必须同时执行以下三步：
+> 1. 更新 `debts.json` 中的 `current_amount` 和 `repayment_history`
+> 2. 在 `transactions.jsonl` 中写入一笔支出交易（type: `expense`，category: `转账`）
+> 3. 更新 `accounts.json` 中对应账户的余额（扣除还款金额）
 
 **负债详情**：
 ```
@@ -99,12 +106,21 @@ allowed-tools: Read Write
 }
 ```
 
+## 负债状态
+
+| 状态 | 说明 |
+|------|------|
+| active | 进行中（current_amount > 0） |
+| settled | 已结清（current_amount = 0） |
+
+当负债还清后，状态标记为 `settled`，保留记录不删除，便于查看历史还款记录。
+
 ## 边界情况
 
 - 负债不存在 → 提示未找到，询问是否添加
 - 还款金额超过欠款 → 提示超额，询问是否还清
 - 重复添加同名负债 → 提示已存在
-- 欠款为0 → 提示已还清，询问是否删除
+- 欠款为0 → 提示已还清，状态改为 `settled`，保留记录
 
 ## 智能识别
 
