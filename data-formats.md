@@ -117,3 +117,38 @@
   ]
 }
 ```
+
+## 负债 (debts.json)
+
+```json
+{
+  "debts": [
+    {
+      "name": "花呗",
+      "type": "huabei",
+      "initial_amount": 5000,
+      "current_amount": 3200,
+      "repayment_day": "每月9号",
+      "repayment_history": [
+        {
+          "date": "2026-06-01",
+          "amount": 1000,
+          "note": ""
+        }
+      ],
+      "created_at": "2026-05-01T00:00:00+08:00"
+    }
+  ]
+}
+```
+
+类型：`credit-card`（信用卡）、`huabei`（花呗）、`jiebei`（借呗）、`loan`（贷款）、`other`（其他）
+
+字段说明：
+- `name`: 负债名称
+- `type`: 负债类型
+- `initial_amount`: 初始欠款金额
+- `current_amount`: 当前剩余欠款
+- `repayment_day`: 还款日描述
+- `repayment_history`: 还款记录数组
+- `created_at`: 创建时间

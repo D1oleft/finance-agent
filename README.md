@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/D1oleft/finance-agent/stargazers"><img src="https://img.shields.io/github/stars/D1oleft/finance-agent?style=social" alt="Stars"></a>
   <a href="https://github.com/D1oleft/finance-agent/blob/main/LICENSE"><img src="https://img.shields.io/github/license/D1oleft/finance-agent" alt="License"></a>
-  <img src="https://img.shields.io/badge/version-2.0.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-2.1.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/Claude%20Code-Skill-purple" alt="Claude Code Skill">
   <img src="https://img.shields.io/badge/MiMo%20Code-Skill-orange" alt="MiMo Code Skill">
 </p>
@@ -18,7 +18,7 @@
 
 一个 Claude Code / MiMo Code 的记账 Skill。不用装 App，直接在聊天里记账。
 
-**核心能力**：自然语言记账 → 自动分类 → 多账户管理 → 预算追踪 → 消费分析
+**核心能力**：自然语言记账 → 自动分类 → 多账户管理 → 预算追踪 → 消费分析 → 负债管理
 
 ## 效果对比
 
@@ -69,6 +69,11 @@ cp -r finance-agent ~/.claude/skills/finance-agent
 
 # 存钱目标
 存钱目标10000
+
+# 负债管理
+负债总览
+添加花呗欠3200每月9号
+还款花呗1000
 ```
 
 ## 功能列表
@@ -84,6 +89,7 @@ cp -r finance-agent ~/.claude/skills/finance-agent
 | 订阅 | `/sub` | "我有哪些订阅" |
 | 提醒 | `/remind` | "提醒我明天还款" |
 | 目标 | `/goal` | "存钱目标10000" |
+| 负债 | `/debt` | "负债"、"欠多少"、"还款" |
 | 导出 | `/export` | "导出本月账单" |
 
 ## v2.0 新增
@@ -96,6 +102,7 @@ cp -r finance-agent ~/.claude/skills/finance-agent
 - ✅ 账户余额追踪
 - ✅ 自动初始化（首次使用自动创建数据文件）
 - ✅ 错误处理（边界情况全覆盖）
+- ✅ 负债管理（添加负债、还款记录、负债总览）
 
 ## 文件结构
 
@@ -116,6 +123,7 @@ finance-agent/
 │   ├── sub.md                  # 订阅管理
 │   ├── remind.md               # 提醒设置
 │   ├── goal.md                 # 存钱目标
+│   ├── debt.md                 # 负债管理
 │   └── export.md               # 数据导出
 └── templates/
     ├── accounts.json           # 账户模板
@@ -123,6 +131,7 @@ finance-agent/
     ├── recurring.json          # 定期收支模板
     ├── subscriptions.json      # 订阅模板
     ├── goals.json              # 目标模板
+    ├── debts.json              # 负债模板
     └── transactions.jsonl      # 交易记录模板
 ```
 
