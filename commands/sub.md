@@ -9,7 +9,7 @@ allowed-tools: Read Write Bash
 ## 流程
 
 ### 1. 初始化检查
-检查 `~/finance/data/subscriptions.json` 是否存在，不存在则创建。
+检查 `~/finance/data/subscriptions.json` 是否存在，不存在则执行统一初始化流程（参见 SKILL.md 初始化章节）。
 
 ### 2. 操作类型
 
@@ -24,8 +24,8 @@ allowed-tools: Read Write Bash
 年度订阅：
 - 域名：100元/年（下次2027-01-15）
 
-月度成本：46元
-年度成本：652元
+月度成本：40元
+年度成本：580元
 ```
 
 **添加**：
@@ -33,6 +33,8 @@ allowed-tools: Read Write Bash
 /sub 添加 B站大会员 25 月
 → 已添加订阅：B站大会员 25元/月
 ```
+
+> **支持的周期类型**：`weekly`（周）、`monthly`（月）、`quarterly`（季）、`yearly`（年）。示例：`/sub 添加 健身房 50 weekly`
 
 **删除**：
 ```
@@ -44,11 +46,11 @@ allowed-tools: Read Write Bash
 ```
 📊 年度订阅成本
 
-月度订阅：552元/年
+月度订阅：480元/年
 年度订阅：100元/年
-总计：652元/年
+总计：580元/年
 
-平均每月：54元
+平均每月：48元
 ```
 
 ## 边界情况
@@ -56,3 +58,5 @@ allowed-tools: Read Write Bash
 - 订阅不存在 → 提示
 - 重复添加 → 提示已存在
 - 续费日期已过 → 提示续费
+- 金额为0或负数 → 提示金额必须大于0，不创建
+- 周期类型无效（非 weekly/monthly/quarterly/yearly） → 提示支持的周期类型

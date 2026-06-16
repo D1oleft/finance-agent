@@ -9,7 +9,7 @@ allowed-tools: Read Write Bash
 ## 流程
 
 ### 1. 初始化检查
-检查 `~/finance/data/goals.json` 是否存在，不存在则创建。
+检查 `~/finance/data/goals.json` 是否存在，不存在则执行统一初始化流程（参见 SKILL.md 初始化章节）。
 
 ### 2. 操作类型
 
@@ -65,3 +65,4 @@ allowed-tools: Read Write Bash
 - 目标不存在 → 提示
 - 存入金额超过剩余 → 提示并设置为完成
 - 截止日期已过 → 提示延期或调整目标
+- 源账户余额不足 → 提示用户余额不足，不执行存入操作

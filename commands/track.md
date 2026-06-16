@@ -23,13 +23,16 @@ allowed-tools: Read Write Bash
 
 ### 3. 校验账户
 如果指定了账户，检查 `~/finance/data/accounts.json` 中是否存在该账户。如果不存在：
-- 花呗、信用卡、借呗 → 自动设为 `credit` 类型创建账户，并在 `debts.json` 中创建对应条目（初始欠款 0）
+- 花呗、信用卡、借呗 → 自动设为 `credit` 类型创建账户，并在 `debts.json` 中创建对应条目（初始欠款 0）。**创建前先检查是否已存在，已存在则跳过创建。**
 - 其他账户 → 询问用户账户类型后添加
 
 ### 4. 信用账户消费同步
 如果账户类型为 `credit`（花呗、信用卡、借呗），消费时同步更新 `~/finance/data/debts.json` 中对应负债的 `current_amount`（增加相应金额）。
 
 ### 5. 写入记录
+
+> **空文件处理**：如果 `transactions.jsonl` 为空或不存在，直接写入第一条记录。
+
 追加到 `~/finance/data/transactions.jsonl`：
 ```json
 {"id":"tx_{date}_{seq}","time":"{now}","amount":{amount},"type":"{type}","category":"{category}","description":"{desc}","account":"{account}","tags":[]}
@@ -66,10 +69,10 @@ allowed-tools: Read Write Bash
 当用户说"从支付宝转500到微信"时：
 1. 从源账户扣除金额
 2. 向目标账户增加金额
-3. 写入一条交易记录（type 为 `transfer`，category 为"转账"）
+3. 写入一条交易记录（type 为 `transfer`，category 为"转账"），记录源账户（`account`）和目标账户（`to_account`）
 
 ```json
-{"id":"tx_{date}_{seq}","time":"{now}","amount":500,"type":"transfer","category":"转账","description":"从支付宝转到微信","account":"支付宝","tags":[]}
+{"id":"tx_{date}_{seq}","time":"{now}","amount":500,"type":"transfer","category":"转账","description":"从支付宝转到微信","account":"支付宝","to_account":"微信","tags":[]}
 ```
 
 ## 边界情况
@@ -78,3 +81,7 @@ allowed-tools: Read Write Bash
 - 多笔消费 → 要求分开记录
 - 账户不存在 → 花呗/信用卡/借呗自动创建（credit 类型+负债条目），其他询问用户
 - 退款/收入 → 记录为收入类型（type: `income`）
+- 负数金额 → 取绝对值并记录（用户可能误输入负号）
+- 零金额 → 不记录，提示金额必须大于0
+- 转账源账户和目标账户相同 → 提示不能自己转给自己
+- 转账源账户余额不足 → 提示余额不足

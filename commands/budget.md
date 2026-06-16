@@ -9,7 +9,7 @@ allowed-tools: Read Write Bash
 ## 流程
 
 ### 1. 初始化检查
-检查 `~/finance/data/budget.json` 是否存在，不存在则创建。
+检查 `~/finance/data/budget.json` 是否存在，不存在则执行统一初始化流程（参见 SKILL.md 初始化章节）。
 
 ### 2. 操作类型
 

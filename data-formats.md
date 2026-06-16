@@ -25,7 +25,23 @@
 - `category`: 分类（餐饮/交通/娱乐/购物/居住/订阅/医疗/学习/工资/理财收益/红包/退款/报销/兼职/转账/其他收入/其他）
 - `description`: 描述
 - `account`: 账户名称（可选）
+- `to_account`: 目标账户（可选，仅转账类型使用）
 - `tags`: 标签数组（可选）
+
+转账类型交易示例（包含 `to_account`）：
+```json
+{
+  "id": "tx_20260616_002",
+  "time": "2026-06-16T20:00:00+08:00",
+  "amount": 500.00,
+  "type": "transfer",
+  "category": "转账",
+  "description": "从支付宝转到微信",
+  "account": "支付宝",
+  "to_account": "微信",
+  "tags": []
+}
+```
 
 ## 账户 (accounts.json)
 
@@ -65,6 +81,8 @@
 - `enabled`: 是否启用
 
 ## 预算 (budget.json)
+
+> **说明**：以下示例为填充后的参考值，模板（`templates/budget.json`）中初始值全为 0，用户需自行设置各分类预算。
 
 ```json
 {
@@ -113,7 +131,7 @@
 - `id`: 唯一标识，格式 `sub_{序号}`
 - `name`: 订阅名称
 - `amount`: 金额
-- `cycle`: 周期，`monthly`（月）、`yearly`（年）
+- `cycle`: 周期，`weekly`（周）、`monthly`（月）、`quarterly`（季）、`yearly`（年）
 - `next_date`: 下次扣费日期
 - `category`: 分类
 - `account`: 扣费账户
@@ -133,6 +151,13 @@
   ]
 }
 ```
+
+字段说明：
+- `name`: 目标名称
+- `target`: 目标金额
+- `saved`: 已存金额
+- `deadline`: 截止日期（可选，格式 `YYYY-MM-DD`）
+- `account`: 关联账户（**必填**）
 
 ## 提醒 (reminders.json)
 
@@ -170,6 +195,7 @@
       "status": "active",
       "initial_amount": 5000,
       "current_amount": 3200,
+      "min_payment": 500,
       "repayment_day": "每月9号",
       "repayment_history": [
         {
@@ -194,6 +220,7 @@
 - `status`: 负债状态（添加时默认为 `active`，还清后改为 `settled`）
 - `initial_amount`: 初始欠款金额（添加时指定的金额）
 - `current_amount`: 当前剩余欠款（添加时等于 initial_amount）
+- `min_payment`: 最低还款额（可选，用于计算"本月待还"，不设置时默认为 current_amount）
 - `repayment_day`: 还款日描述
 - `repayment_history`: 还款记录数组
 - `created_at`: 创建时间
