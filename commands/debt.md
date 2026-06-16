@@ -1,7 +1,7 @@
 ---
 description: 负债管理。添加负债、记录还款、查看负债总览。当用户说"负债"、"欠多少"、"还了多少"、"添加负债"、"还款"时使用。
 argument-hint: "[操作]"
-allowed-tools: Read Write
+allowed-tools: Read Write Bash
 ---
 
 # 负债管理
@@ -35,6 +35,8 @@ allowed-tools: Read Write
 → 已添加负债：信用卡，欠款 8,500元，还款日：每月25号
 ```
 
+> **同步创建信用账户**：添加负债时，如果 `accounts.json` 中不存在对应信用账户（花呗/信用卡/借呗），自动创建 `credit` 类型账户。
+
 > **参数语义**：添加负债时指定的金额同时作为 `initial_amount`（初始欠款）和 `current_amount`（当前欠款），即添加时两者相等。
 
 **记录还款**：
@@ -48,8 +50,12 @@ allowed-tools: Read Write
 
 > **重要**：还款操作必须同时执行以下三步：
 > 1. 更新 `debts.json` 中的 `current_amount` 和 `repayment_history`
-> 2. 在 `transactions.jsonl` 中写入一笔支出交易（type: `expense`，category: `转账`）
+> 2. 在 `transactions.jsonl` 中写入一笔转账交易（type: `transfer`，category: `转账`）
 > 3. 更新 `accounts.json` 中对应账户的余额（扣除还款金额）
+>
+> **来源账户**：还款时如果未指定来源账户，询问用户从哪个账户还款。
+>
+> **超额处理**：按实际欠款金额记录还款，多出部分不记录。例如欠款 2,200 元，还款 3,000 元时，只记录还款 2,200 元。
 
 **负债详情**：
 ```
@@ -69,6 +75,8 @@ allowed-tools: Read Write
 /debt 删除 花呗
 → 已删除负债：花呗（已还清）
 ```
+
+> **删除限制**：只有 `status` 为 `settled`（已结清）的负债才能删除。未还清的负债不允许删除。
 
 ## 负债类型
 
@@ -90,6 +98,7 @@ allowed-tools: Read Write
     {
       "name": "花呗",
       "type": "huabei",
+      "status": "active",
       "initial_amount": 5000,
       "current_amount": 3200,
       "repayment_day": "每月9号",
@@ -118,7 +127,7 @@ allowed-tools: Read Write
 ## 边界情况
 
 - 负债不存在 → 提示未找到，询问是否添加
-- 还款金额超过欠款 → 提示超额，询问是否还清
+- 还款金额超过欠款 → 按实际欠款金额记录，多出部分不记录
 - 重复添加同名负债 → 提示已存在
 - 欠款为0 → 提示已还清，状态改为 `settled`，保留记录
 

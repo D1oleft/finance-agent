@@ -1,7 +1,7 @@
 ---
 description: 预算管理。设置和追踪月度预算。当用户说"设置预算"、"预算剩余"时使用。
 argument-hint: "[操作]"
-allowed-tools: Read Write
+allowed-tools: Read Write Bash
 ---
 
 # 预算管理

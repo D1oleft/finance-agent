@@ -26,13 +26,13 @@ version: 2.1.0
 
 ## 初始化
 
-首次使用时，自动创建数据目录和文件：
+首次使用任意命令时，统一执行初始化流程：
 
 ```bash
-mkdir -p ~/finance/data ~/finance/reports
+mkdir -p ~/finance/data ~/finance/reports ~/finance/reports/export
 ```
 
-如果数据文件不存在，从 `${CLAUDE_SKILL_DIR}/templates/` 复制模板。
+如果数据文件不存在，从 `${CLAUDE_SKILL_DIR}/templates/` 复制所有模板。
 
 ## 命令列表
 
@@ -66,7 +66,14 @@ mkdir -p ~/finance/data ~/finance/reports
 | 会员、订阅、续费 | 订阅 |
 | 医院、药、体检 | 医疗 |
 | 书、课程、培训 | 学习 |
-| 转账、还钱、红包 | 转账 |
+| 转账、还钱、发红包 | 转账 |
+| 工资、薪资、月薪 | 工资 |
+| 利息、分红、理财收益 | 理财收益 |
+| 红包收入 | 红包 |
+| 退款 | 退款 |
+| 报销 | 报销 |
+| 兼职、外快 | 兼职 |
+| 其他收入 | 其他收入 |
 | （无法匹配以上分类时） | 其他 |
 
 ### 账户识别
@@ -87,6 +94,7 @@ mkdir -p ~/finance/data ~/finance/reports
 
 - 支出：花了、消费、支出、买了、交了
 - 收入：工资、收入、退款、红包、报销
+- 转账：转账、还钱、还花呗、还信用卡、存入目标
 - 默认：支出
 
 ## 数据结构
@@ -111,13 +119,35 @@ mkdir -p ~/finance/data ~/finance/reports
 当用户说"从支付宝转500到微信"时：
 1. 从源账户扣除金额
 2. 向目标账户增加金额
-3. 写入两条交易记录（type 分别为 `expense` 和 `income`），category 为"转账"
+3. 写入一条交易记录（type 为 `transfer`，category 为"转账"），记录源账户和目标账户
 
 ## 支持文件
 
 - [输出模板](templates.md) — 各命令的标准输出格式
 - [数据格式](data-formats.md) — JSON/JSONL 数据结构定义
 - [错误处理](error-handling.md) — 边界情况和错误处理
+
+## 命令与模板文件对应关系
+
+| 命令文件 | 数据模板 | 说明 |
+|----------|----------|------|
+| track.md | transactions.jsonl | 交易记录 |
+| accounts.md | accounts.json | 账户列表 |
+| budget.md | budget.json | 预算设置 |
+| recurring.md | recurring.json | 定期收支 |
+| sub.md | subscriptions.json | 订阅列表 |
+| goal.md | goals.json | 存钱目标 |
+| debt.md | debts.json | 负债记录 |
+| remind.md | reminders.json | 提醒列表 |
+| report.md | transactions.jsonl | 消费报表（只读） |
+| export.md | transactions.jsonl | 数据导出（只读） |
+| import.md | transactions.jsonl | 账单导入 |
+
+## allowed-tools 说明
+
+- 需要读写文件的命令：`Read Write`
+- 需要检查定时任务或执行初始化的命令：加上 `Bash`
+- 只读命令：`Read`（需要初始化检查时加 `Bash`）
 
 ## 设计原则
 

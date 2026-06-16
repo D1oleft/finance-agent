@@ -1,7 +1,7 @@
 ---
 description: 消费报表。查看日/周/月消费分析。当用户说"这个月花了多少"、"消费报表"时使用。
 argument-hint: "[时间范围]"
-allowed-tools: Read
+allowed-tools: Read Bash
 ---
 
 # 消费报表
@@ -11,10 +11,13 @@ allowed-tools: Read
 ### 1. 读取数据
 读取 `~/finance/data/transactions.jsonl`，按时间筛选。
 
+> **JSONL 损坏处理**：读取 `transactions.jsonl` 时，参考 [error-handling.md](../error-handling.md) 的 JSONL 损坏处理流程。
+
 ### 2. 统计分析
-- 按分类汇总
+- 按分类汇总（仅 `type: expense` 的交易计入"总支出"）
 - 按账户汇总
 - 计算趋势（与上月对比）
+- **转账类交易（`type: transfer`）不计入总支出或总收入**，单独列出
 
 ### 3. 输出报表
 
@@ -36,6 +39,10 @@ allowed-tools: Read
 ├─ 支付宝：1,500元（46.9%）
 ├─ 微信：800元（25%）
 └─ 银行卡：700元（21.9%）
+
+转账记录：
+├─ 支付宝 → 微信：500元
+└─ 还款（花呗）：1,000元
 
 💡 分析：
 - 购物支出增长40%，主要来自618促销

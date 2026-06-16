@@ -1,7 +1,7 @@
 ---
 description: 存钱目标。设置和追踪存钱目标。当用户说"存钱目标"、"存钱进度"时使用。
 argument-hint: "[目标]"
-allowed-tools: Read Write
+allowed-tools: Read Write Bash
 ---
 
 # 存钱目标
@@ -15,11 +15,13 @@ allowed-tools: Read Write
 
 **设置目标**：
 ```
-/goal 设置 旅行基金 5000
-/goal 设置 旅行基金 5000 2026-12-31
-→ 已设置目标：旅行基金 5,000元，截止：2026-12-31
+/goal 设置 旅行基金 5000 支付宝
+/goal 设置 旅行基金 5000 支付宝 2026-12-31
+→ 已设置目标：旅行基金 5,000元，关联账户：支付宝，截止：2026-12-31
 ```
 
+> **必填参数**：`account`（关联账户）为必填字段。设置目标时必须指定关联账户，如果用户未指定，询问用户从哪个账户存入。
+>
 > **可选参数**：截止日期（deadline）为可选参数，格式为 `YYYY-MM-DD`。不指定则无截止日期。
 
 **查看进度**：
@@ -46,7 +48,7 @@ allowed-tools: Read Write
 
 > **重要**：存入操作必须同时执行以下三步：
 > 1. 更新 `goals.json` 中的 `saved` 金额
-> 2. 在 `transactions.jsonl` 中写入一笔支出交易（type: `expense`，category: `转账`）
+> 2. 在 `transactions.jsonl` 中写入一笔转账交易（type: `transfer`，category: `转账`）
 > 3. 更新 `accounts.json` 中对应账户的余额（扣除存入金额）
 
 **查看所有目标**：

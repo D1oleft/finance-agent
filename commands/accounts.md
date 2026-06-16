@@ -1,7 +1,7 @@
 ---
 description: 账户管理。查看、添加、修改账户余额。当用户说"账户总览"、"余额多少"、"添加账户"时使用。
 argument-hint: "[操作]"
-allowed-tools: Read Write
+allowed-tools: Read Write Bash
 ---
 
 # 账户管理

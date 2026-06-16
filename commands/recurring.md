@@ -1,7 +1,7 @@
 ---
 description: 定期收支管理。设置每月自动记录的收入和支出。当用户说"设置房租每月1号2000"、"工资自动记"时使用。
 argument-hint: "[操作]"
-allowed-tools: Read Write
+allowed-tools: Read Write Bash
 ---
 
 # 定期收支

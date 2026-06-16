@@ -1,7 +1,7 @@
 ---
 description: 订阅管理。管理所有订阅服务。当用户说"我有哪些订阅"、"添加订阅"时使用。
 argument-hint: "[操作]"
-allowed-tools: Read Write
+allowed-tools: Read Write Bash
 ---
 
 # 订阅管理

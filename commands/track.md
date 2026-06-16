@@ -9,31 +9,38 @@ allowed-tools: Read Write Bash
 ## 流程
 
 ### 1. 初始化检查
-检查 `~/finance/data/transactions.jsonl` 是否存在，不存在则创建。
+检查 `~/finance/data/transactions.jsonl` 是否存在，不存在则执行统一初始化流程（参见 SKILL.md）。
 
 ### 2. 解析输入
 从 `$ARGUMENTS` 中提取：
 - **金额**：数字部分
 - **描述**：文字部分
 - **账户**：根据关键词判断（可选）
-- **类型**：`expense`（支出）或 `income`（收入），默认 `expense`
+- **类型**：`expense`（支出）、`income`（收入）或 `transfer`（转账），默认 `expense`
 - **分类**：根据关键词自动判断
 
-> **注意**：`type` 字段必须使用英文 `expense` 或 `income`，不能使用中文"支出"/"收入"。
+> **注意**：`type` 字段必须使用英文 `expense`、`income` 或 `transfer`，不能使用中文。
 
 ### 3. 校验账户
-如果指定了账户，检查 `~/finance/data/accounts.json` 中是否存在该账户。如果不存在，提示用户是否添加。
+如果指定了账户，检查 `~/finance/data/accounts.json` 中是否存在该账户。如果不存在：
+- 花呗、信用卡、借呗 → 自动设为 `credit` 类型创建账户，并在 `debts.json` 中创建对应条目（初始欠款 0）
+- 其他账户 → 询问用户账户类型后添加
 
-### 4. 写入记录
+### 4. 信用账户消费同步
+如果账户类型为 `credit`（花呗、信用卡、借呗），消费时同步更新 `~/finance/data/debts.json` 中对应负债的 `current_amount`（增加相应金额）。
+
+### 5. 写入记录
 追加到 `~/finance/data/transactions.jsonl`：
 ```json
 {"id":"tx_{date}_{seq}","time":"{now}","amount":{amount},"type":"{type}","category":"{category}","description":"{desc}","account":"{account}","tags":[]}
 ```
 
-### 5. 更新账户余额
+> **JSONL 损坏处理**：读取 `transactions.jsonl` 时，参考 [error-handling.md](../error-handling.md) 的 JSONL 损坏处理流程。
+
+### 6. 更新账户余额
 如果指定了账户，更新 `~/finance/data/accounts.json` 中的余额。
 
-### 6. 返回确认
+### 7. 返回确认
 - 如果指定了账户：
 ```
 ✅ 已记录
@@ -50,45 +57,24 @@ allowed-tools: Read Write Bash
 - 本月{分类}：{本月分类总额}元
 ```
 
-## 分类规则
+## 分类规则和账户识别
 
-| 关键词 | 分类 |
-|--------|------|
-| 午饭、晚饭、外卖、餐、吃、喝、饭、咖啡、奶茶 | 餐饮 |
-| 打车、地铁、公交、油费、停车、滴滴 | 交通 |
-| 电影、游戏、KTV、酒吧、玩 | 娱乐 |
-| 衣服、鞋、包、化妆品、买 | 购物 |
-| 房租、水电、物业、网费 | 居住 |
-| 会员、订阅、续费 | 订阅 |
-| 医院、药、体检 | 医疗 |
-| 书、课程、培训 | 学习 |
-| 转账、还钱、红包 | 转账 |
-| （无法匹配以上分类时） | 其他 |
-
-## 账户识别
-
-| 关键词 | 账户 |
-|--------|------|
-| 支付宝、余额宝 | 支付宝 |
-| 微信、零钱、零钱通 | 微信 |
-| 银行卡、储蓄卡 | 银行卡 |
-| 信用卡 | 信用卡 |
-| 花呗 | 花呗 |
-| 借呗 | 借呗 |
-| 现金 | 现金 |
-
-> **信用支付说明**：花呗、信用卡、借呗等信用支付方式应同时在 `accounts.json` 和 `debts.json` 中记录。消费时从对应信用账户扣款，同时在负债中增加相应金额。
+分类规则和账户识别规则统一定义在 [SKILL.md](../SKILL.md) 的「智能识别规则」部分，此处不再重复定义。
 
 ## 转账功能
 
 当用户说"从支付宝转500到微信"时：
 1. 从源账户扣除金额
 2. 向目标账户增加金额
-3. 写入两条交易记录（type 分别为 `expense` 和 `income`），category 为"转账"
+3. 写入一条交易记录（type 为 `transfer`，category 为"转账"）
+
+```json
+{"id":"tx_{date}_{seq}","time":"{now}","amount":500,"type":"transfer","category":"转账","description":"从支付宝转到微信","account":"支付宝","tags":[]}
+```
 
 ## 边界情况
 
 - 金额无法识别 → 询问金额
 - 多笔消费 → 要求分开记录
-- 账户不存在 → 询问是否添加
+- 账户不存在 → 花呗/信用卡/借呗自动创建（credit 类型+负债条目），其他询问用户
 - 退款/收入 → 记录为收入类型（type: `income`）
