@@ -27,7 +27,11 @@ allowed-tools: Read Write Bash
 - 其他账户 → 询问用户账户类型后添加
 
 ### 4. 信用账户消费同步
-如果账户类型为 `credit`（花呗、信用卡、借呗），消费时同步更新 `~/finance/data/debts.json` 中对应负债的 `current_amount`（增加相应金额）。
+如果账户类型为 `credit`（花呗、信用卡、借呗），消费时：
+- `debts.json`：对应负债的 `current_amount` 增加消费金额（欠更多钱）
+- `accounts.json`：对应账户的 `balance` 减少消费金额（信用额度减少，余额变为更负的数）
+
+示例：花呗余额 0，消费 500 后 → balance = -500，current_amount = 500
 
 ### 5. 写入记录
 
